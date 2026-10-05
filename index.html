@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05070d">
+<title>JARVIS V4 — iPhone</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#05070d;color:#eaf7ff;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display",Arial,sans-serif}
+body{padding:env(safe-area-inset-top) 12px env(safe-area-inset-bottom)}
+.app{max-width:760px;margin:auto;padding:12px 4px 28px}
+header{display:flex;justify-content:space-between;align-items:center;padding:10px 4px 14px}.brand{font-weight:900;letter-spacing:4px}.brand b{color:#45eaff}.status{font-size:11px;color:#6df4ff}
+.panel{background:#09121bdd;border:1px solid #174657;border-radius:22px;box-shadow:0 0 35px #00d9ff12}
+.orbbox{text-align:center;padding:24px 0 18px}.orb{margin:auto;width:135px;height:135px;border-radius:50%;background:radial-gradient(circle,#e7ffff 0 2%,#30dce8 5%,#087d9b 20%,#041827 58%,transparent 72%);box-shadow:0 0 30px #18dcea,0 0 90px #087caa66}.listen{animation:pulse .6s infinite alternate}@keyframes pulse{to{transform:scale(1.1);box-shadow:0 0 55px #18dcea,0 0 120px #087caa}}
+.title{margin-top:10px;font-size:12px;letter-spacing:2px;color:#85e9ef}
+.chat{height:310px;overflow:auto;padding:12px;margin-top:12px}.msg{padding:10px 12px;margin:8px 0;border-radius:15px;white-space:pre-wrap;line-height:1.4;font-size:14px}.j{background:#0b2731;border:1px solid #164b5b}.u{background:#111725;border:1px solid #303b51;text-align:right}.tag{display:block;font-size:9px;opacity:.55;margin-bottom:3px}
+.composer{display:grid;grid-template-columns:1fr auto;gap:8px;margin-top:12px}.composer input{min-width:0}.composer button,.composer input,.actions button,.settings input,.settings button{font:inherit;color:#eefcff;background:#09151f;border:1px solid #245365;border-radius:14px;padding:13px}.send{font-weight:700}.mic{grid-column:1/-1;width:100%;padding:15px!important;background:#0b2a34!important;border-color:#268493!important}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:10px}.actions button{font-size:13px}
+.quick{display:flex;gap:7px;overflow:auto;padding:10px 0}.quick button{white-space:nowrap;border-radius:999px;padding:9px 12px;background:#0a1720;color:#a8f1f5;border:1px solid #204653}
+details{margin-top:12px;padding:14px}.settings summary{cursor:pointer;color:#91edf3}.grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.grid input{width:100%}.hint{font-size:11px;color:#81969e;line-height:1.45;margin-top:10px}
+.mem{margin-top:12px;padding:14px}.mem pre{white-space:pre-wrap;max-height:130px;overflow:auto;color:#9fe5eb;font-size:12px}.danger{border-color:#7a3540!important}
+.note{font-size:11px;color:#71858c;line-height:1.45;margin-top:12px}.footer{text-align:center;font-size:10px;color:#536871;margin:15px}
+</style>
+</head>
+<body>
+<div class="app">
+<header><div class="brand">JARVIS <b>V4</b></div><div class="status" id="status">PRONTO</div></header>
+<section class="panel orbbox"><div class="orb" id="orb"></div><div class="title" id="title">FALE OU DIGITE UM COMANDO</div></section>
+<section class="panel chat" id="chat"></section>
+
+<div class="quick">
+<button data-c="abra whatsapp">💬 WhatsApp</button><button data-c="abra instagram">📸 Instagram</button><button data-c="abra youtube">▶️ YouTube</button><button data-c="abra discord">🎧 Discord</button><button data-c="abra free fire">🎮 Free Fire</button><button data-c="ajuda">⚡ Ajuda</button>
+</div>
+
+<div class="composer">
+<input id="input" type="text" placeholder="Digite: abra WhatsApp, ligue 44999999999..." autocomplete="off" autocapitalize="sentences">
+<button class="send" id="send">Enviar</button>
+<button class="mic" id="mic">🎙️ FALAR COM JARVIS</button>
+</div>
+
+<div class="actions">
+<button id="call">📞 Ligar para número</button>
+<button id="time">🕐 Que horas são?</button>
+<button id="wa">💬 Abrir WhatsApp</button>
+<button id="ig">📸 Abrir Instagram</button>
+<button id="yt">▶️ Abrir YouTube</button>
+<button id="dc">🎧 Abrir Discord</button>
+<button id="ff">🎮 Abrir Free Fire</button>
+<button id="google">🔎 Abrir Google</button>
+</div>
+
+<details class="panel settings">
+<summary>⚙️ Configurações</summary>
+<div class="grid"><input id="name" placeholder="Seu nome"><button id="save">Salvar nome</button></div>
+<div class="grid"><input id="contactName" placeholder="Nome do contato"><input id="contactPhone" placeholder="Número (ex.: 44999999999)"></div>
+<div class="grid"><button id="saveContact">Salvar contato</button><button id="callSaved">📞 Ligar contato salvo</button></div>
+<div class="grid"><button id="voiceOn">🔊 Voz: ligada</button><button id="clear" class="danger">Apagar memória</button></div>
+<div class="hint">A ligação funciona abrindo o discador do iPhone com <b>tel:</b>. Um site não consegue ler seus Contatos do iPhone diretamente. Por isso, o JARVIS permite salvar nome + número dentro dele.</div>
+</details>
+
+<section class="panel mem"><b>🧠 Memória</b><pre id="mem"></pre></section>
+<div class="note">IMPORTANTE: o microfone do iPhone normalmente precisa de Safari + HTTPS + permissão de microfone. Se você abrir o HTML como arquivo no app Arquivos, o reconhecimento de voz pode não funcionar. Para usar voz, publique este arquivo em uma página HTTPS gratuita.</div>
+<div class="footer">JARVIS V4 CORRIGIDO • iPhone • comandos locais • memória • ligações • apps</div>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const chat=$("chat"), input=$("input"), orb=$("orb"), status=$("status"), title=$("title");
+const DB={get(k,d){try{const v=localStorage.getItem(k);return v===null?d:JSON.parse(v)}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+let mem=DB.get("j_mem",[]);
+let cfg=DB.get("j_cfg",{name:"",voice:true,contactName:"",contactPhone:""});
+$("name").value=cfg.name;$("contactName").value=cfg.contactName;$("contactPhone").value=cfg.contactPhone;
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+function add(text,who="j"){const d=document.createElement("div");d.className="msg "+who;d.innerHTML='<span class="tag">'+(who==="j"?"JARVIS":"VOCÊ")+"</span>"+esc(text);chat.appendChild(d);chat.scrollTop=chat.scrollHeight}
+function speak(t){if(!cfg.voice||!("speechSynthesis"in window))return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang="pt-BR";u.rate=.96;speechSynthesis.speak(u)}catch{}}
+function reply(t){add(t,"j");speak(t)}
+function saveCfg(){cfg.name=$("name").value.trim();DB.set("j_cfg",cfg);reply("Nome salvo.")}
+function render(){ $("mem").textContent=mem.length?mem.map((x,i)=>(i+1)+". "+x).join("\n"):"Nenhuma memória salva."}
+function normalizeNumber(s){return String(s).replace(/[^\d+]/g,"")}
+function openExternal(appUrl, fallbackUrl, label){
+  // iOS may block custom URL schemes unless triggered by a user gesture.
+  // We try the app scheme and provide a fallback after a short delay.
+  const start=Date.now();
+  try{window.location.href=appUrl}catch{}
+  setTimeout(()=>{if(document.visibilityState==="visible" && Date.now()-start<1800 && fallbackUrl) window.location.href=fallbackUrl},900);
+  reply("Abrindo "+label+".");
+}
+function callNumber(num){
+  num=normalizeNumber(num);
+  if(!num || num.replace(/\D/g,"").length<8){reply("Preciso de um número de telefone válido. Exemplo: ligue 44999999999.");return}
+  reply("Abrindo a ligação para "+num+".");
+  setTimeout(()=>{window.location.href="tel:"+num},250);
+}
+function saveContact(){cfg.contactName=$("contactName").value.trim();cfg.contactPhone=normalizeNumber($("contactPhone").value);DB.set("j_cfg",cfg);reply("Contato "+(cfg.contactName||"sem nome")+" salvo.")}
+function app(name){
+  const map={
+   whatsapp:["whatsapp://","https://wa.me/","WhatsApp"],
+   instagram:["instagram://app","https://www.instagram.com/","Instagram"],
+   youtube:["youtube://","https://www.youtube.com/","YouTube"],
+   discord:["discord://","https://discord.com/app","Discord"],
+   freefire:["freefire://","https://ff.garena.com/","Free Fire"],
+   google:["https://www.google.com/","https://www.google.com/","Google"]
+  };
+  const x=map[name];if(x)openExternal(x[0],x[1],x[2]);
+}
+function command(raw){
+  const t=String(raw||"").trim();if(!t)return;
+  add(t,"u");input.value="";
+  const l=t.toLowerCase();
+
+  if(l==="ajuda"||l.includes("o que você consegue")){
+    reply("Eu consigo ouvir, falar, receber texto, guardar memória, abrir WhatsApp, Instagram, YouTube, Discord, Free Fire e Google, além de abrir ligações. Exemplos: abra WhatsApp; abra Free Fire; ligue 44999999999; lembre que meu apelido é X.");return;
+  }
+  if(l.includes("que horas")||l==="hora"){reply("Agora são "+new Date().toLocaleTimeString("pt-BR",{hour:"2-digit",minute:"2-digit"})+".");return}
+  if(/^(lembre|lembra|guarde|memorize)/i.test(t)){
+    const m=t.replace(/^(lembre|lembra|guarde|memorize)(-me)?\s*(que)?\s*/i,"").trim();
+    if(!m){reply("Diga o que devo lembrar.");return}
+    mem.push(m);DB.set("j_mem",mem);render();reply("Memória salva.");return;
+  }
+  if(l.includes("minhas memórias")||l.includes("o que você lembra")){reply(mem.length?"Eu lembro de: "+mem.join("; "):"Não tenho memórias salvas.");return}
+  if(l.includes("apagar")&&l.includes("memória")){mem=[];DB.set("j_mem",mem);render();reply("Memória apagada.");return}
+
+  const digits=t.replace(/[^\d]/g,"");
+  if((l.includes("ligue")||l.includes("ligar")||l.includes("telefone")||l.includes("chame")) && digits.length>=8){callNumber(digits);return}
+  if(l.includes("ligue")||l.includes("ligar")||l.includes("telefone")||l.includes("chame")){
+    if(cfg.contactName && (l.includes(cfg.contactName.toLowerCase()))){callNumber(cfg.contactPhone);return}
+    reply("Não consigo acessar os Contatos do iPhone diretamente. Salve o nome e o número em Configurações do JARVIS e diga: ligue para "+(cfg.contactName||"o contato salvo")+".");return;
+  }
+
+  if(l.includes("whatsapp")){app("whatsapp");return}
+  if(l.includes("instagram")){app("instagram");return}
+  if(l.includes("youtube")){app("youtube");return}
+  if(l.includes("discord")){app("discord");return}
+  if(l.includes("free fire")||l.includes("freefire")){app("freefire");return}
+  if(l.includes("google")){app("google");return}
+
+  if(l.includes("meu nome")){reply(cfg.name?"Seu nome é "+cfg.name+".":"Você ainda não colocou seu nome nas configurações.");return}
+  reply("Comando recebido. Eu consigo executar comandos locais. Para perguntas abertas de IA, esta versão não depende de uma chave paga. Você pode me dizer, por exemplo: abra WhatsApp, abra Instagram, abra Free Fire ou ligue 44999999999.");
+}
+$("send").addEventListener("click",()=>command(input.value));
+input.addEventListener("keydown",e=>{if(e.key==="Enter"){e.preventDefault();command(input.value)}});
+document.querySelectorAll(".quick button").forEach(b=>b.addEventListener("click",()=>command(b.dataset.c)));
+$("save").addEventListener("click",saveCfg);
+$("saveContact").addEventListener("click",saveContact);
+$("callSaved").addEventListener("click",()=>callNumber(cfg.contactPhone));
+$("call").addEventListener("click",()=>{const n=prompt("Digite o número, com DDD:");if(n)callNumber(n)});
+$("time").addEventListener("click",()=>command("que horas são"));
+$("wa").addEventListener("click",()=>app("whatsapp"));
+$("ig").addEventListener("click",()=>app("instagram"));
+$("yt").addEventListener("click",()=>app("youtube"));
+$("dc").addEventListener("click",()=>app("discord"));
+$("ff").addEventListener("click",()=>app("freefire"));
+$("google").addEventListener("click",()=>app("google"));
+$("clear").addEventListener("click",()=>{mem=[];DB.set("j_mem",mem);render();reply("Memória apagada.")});
+$("voiceOn").addEventListener("click",()=>{cfg.voice=!cfg.voice;DB.set("j_cfg",cfg);$("voiceOn").textContent=cfg.voice?"🔊 Voz: ligada":"🔇 Voz: desligada";reply(cfg.voice?"Voz ligada.":"Voz desligada.")});
+let rec=null;
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+if(SR){
+  rec=new SR();rec.lang="pt-BR";rec.continuous=false;rec.interimResults=false;
+  rec.onstart=()=>{orb.classList.add("listen");title.textContent="OUVINDO...";status.textContent="MICROFONE ATIVO"};
+  rec.onend=()=>{orb.classList.remove("listen");title.textContent="FALE OU DIGITE UM COMANDO";status.textContent="PRONTO"};
+  rec.onerror=e=>{orb.classList.remove("listen");title.textContent="ERRO NO MICROFONE";reply("Não consegui usar o microfone. No iPhone, abra o JARVIS no Safari por HTTPS e permita o microfone. Código: "+(e.error||"desconhecido"))};
+  rec.onresult=e=>{const text=e.results[0][0].transcript;command(text)};
+}else{
+  $("mic").addEventListener("click",()=>reply("Seu navegador não disponibilizou reconhecimento de voz. No iPhone, use Safari em uma página HTTPS."));
+}
+$("mic").addEventListener("click",()=>{
+  if(!rec)return;
+  try{rec.start()}catch(e){reply("O microfone já está sendo usado. Espere um segundo e tente novamente.")}
+});
+render();
+add("JARVIS V4 corrigido online. Digite um comando para testar. Exemplo: abra WhatsApp ou ligue 44999999999.");
+</script>
+</body>
+</html>
